@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksamens</title>
+    <link rel="stylesheet" href="Eksamens.css">
+</head>
+<body>
+<div class="container">
+    <h1></h1>
+    <form id="guestbookForm" method="post" action="Eksamens.php" onsubmit="return submitForm()">
+        <label for="name">Name:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="message">Message:</label>
+        <textarea id="message" name="message" required></textarea>
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <div>
+        <h2>Comments:</h2>
+        <ul id="commentsList"></ul>
+    </div>
+</div>
+
+<script>
+    function submitForm() {
+        var name = document.getElementById('name').value;
+        var email = document.getElementById('email').value;
+        var message = document.getElementById('message').value;
+
+        if (name === '' || email === '' || message === '') {
+            alert('Please fill out all fields');
+            return false;
+        }
+
+        var formData = new FormData(document.getElementById('guestbookForm'));
+
+        fetch('Eksamens.php', {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(data.message);
+                    document.getElementById('commentsList').innerHTML += `
+                        <li>
+                            <strong>Name:</strong> ${name}<br>
+                            <strong>Email:</strong> ${email}<br>
+                            <strong>Message:</strong> ${message}<br>
+                        </li>
+                    `;
+                    document.getElementById('guestbookForm').reset();
+                } else {
+                    alert('Error saving comment: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while saving the comment');
+            });
+
+        return false;
+    }
+</script>
+</body>
+</html>
